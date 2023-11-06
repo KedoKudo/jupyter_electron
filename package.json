@@ -1,0 +1,15 @@
+{
+  "name": "jupyter-electron-app",
+  "version": "1.0.0",
+  "description": "An Electron app that runs JupyterLab",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=arm64 --prune=true --out=release-builds",
+    "package-win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --prune=true --out=release-builds",
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --prune=true --out=release-builds"
+  },
+  "dependencies": {
+    "electron": "latest"
+  }
+}

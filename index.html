@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Enter Port Number</title>
+</head>
+<body>
+  <h1>Start JupyterLab</h1>
+  <form id="portForm">
+    <label for="port">Enter a port number:</label>
+    <input type="number" id="port" name="port" required>
+    <button type="submit">Start JupyterLab</button>
+  </form>
+
+  <script>
+    // This code assumes your preload.js properly exposes window.electronAPI
+    document.getElementById('portForm').addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent the default form behavior
+      const port = document.getElementById('port').value;
+      window.electronAPI.checkPort(parseInt(port, 10));
+    });
+
+    window.electronAPI.onPortStatus((isAvailable) => {
+      if (isAvailable) {
+        console.log('Port is available, Jupyter should start.');
+      } else {
+        alert('Port is not available. Please choose another one.');
+      }
+    });
+  </script>
+</body>
+</html>
