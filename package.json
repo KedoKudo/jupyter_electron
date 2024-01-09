@@ -17,7 +17,8 @@
   "build": {
     "appId": "gov.ornl.jupyter-electron-app",
     "linux": {
-      "target": "rpm"
+      "target": "rpm",
+      "category": "Science"
     }
   },
   "devDependencies": {
