@@ -18,7 +18,9 @@
     "appId": "gov.ornl.jupyter-electron-app",
     "linux": {
       "target": "rpm",
-      "category": "Science"
+      "category": "Science",
+      "executableName": "jupyter-electron-app",
+      "spec": "config/rpm.spec"
     }
   },
   "devDependencies": {
