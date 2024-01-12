@@ -48,38 +48,38 @@ do
 
    # Start the chosen option
    case "$USER_IN" in
-      1) read -p "Please give the installation directory: > " INSTALL_DIR
-         read -p "Does this location require sudo privileges (y/n)? > " yn
-         case $yn in
-            [Yy]) echo "OK, will request password later."
-                  timer_func
-                  npm_install_func
-                  cp -r ./release-builds/jupyter-electron-app-linux-x64 /tmp/
-                  echo "Moving to $INSTALL_DIR"
-                  timer_func
-                  # sudo mkdir $INSTALL_DIR
-                  sudo mv /tmp/jupyter-electron-app-linux-x64 $INSTALL_DIR
-                  sudo chown -R root:root $INSTALL_DIR
-                  sudo chmod -R 755 $INSTALL_DIR
-                  echo "$(date +%F---%H:%M:%S) : installed to $INSTALL_DIR" >> install_log;;
-            [Nn]) echo "Installing as local user."
-                  timer_func
-                  npm_install_func
-                  echo "Moving to $INSTALL_DIR"
-                  timer_func
-                  # mkdir $INSTALL_DIR
-                  mv ./release-builds/jupyter-electron-app-linux-x64 $INSTALL_DIR
-                  chmod -R 755 $INSTALL_DIR
-                  echo "$(date +%F---%H:%M:%S) : installed to $INSTALL_DIR" >> install_log;;
-            *   ) echo "Invalid response.
-                        Need y or n, please." ;;
-         esac
-         echo "Cleaning up..."
-         cleanup_func
-         clear
-         # list out the current npm-installed packages before exiting
-         npm list
-         break ;;
+   1) read -p "Please give the installation directory: > " INSTALL_DIR
+      read -p "Does this location require sudo privileges (y/n)? > " yn
+      case $yn in
+         [Yy]) echo "OK, will request password later."
+               timer_func
+               npm_install_func
+               cp -r ./release-builds/jupyter-electron-app-linux-x64 /tmp/
+               echo "Moving to $INSTALL_DIR"
+               timer_func
+               # sudo mkdir $INSTALL_DIR
+               sudo mv /tmp/jupyter-electron-app-linux-x64 $INSTALL_DIR
+               sudo chown -R root:root $INSTALL_DIR
+               sudo chmod -R 755 $INSTALL_DIR
+               echo "$(date +%F---%H:%M:%S) : installed to $INSTALL_DIR" >> install_log;;
+         [Nn]) echo "Installing as local user."
+               timer_func
+               npm_install_func
+               echo "Moving to $INSTALL_DIR"
+               timer_func
+               # mkdir $INSTALL_DIR
+               mv ./release-builds/jupyter-electron-app-linux-x64 $INSTALL_DIR
+               chmod -R 755 $INSTALL_DIR
+               echo "$(date +%F---%H:%M:%S) : installed to $INSTALL_DIR" >> install_log;;
+         *   ) echo "Invalid response.
+                     Need y or n, please." ;;
+      esac
+      echo "Cleaning up..."
+      cleanup_func
+      clear
+      # list out the current npm-installed packages before exiting
+      npm list
+      break ;;
 
    2) echo "Cleaning up npm packages now"
       npm remove electron electron-packager
