@@ -7,7 +7,7 @@ An example electron wrapper for Jupyter lab.
 - Clone the repository.  
     If using on Linux,  
         - Run `sh ./linux-runme.sh` for a slightly automated experience.  
-            - Current script is able to install, give alternatives, and uninstall/clean npm files.
+            - Current script is able to install, give alternatives, and uninstall/clean npm files.  
         - Follow on-screen prompts.
 
 - Run `npm install` to install dependencies, alternatively see below.
