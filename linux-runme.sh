@@ -1,22 +1,40 @@
 #!/bin/bash
 
-# Initial install script created by ORNL Username JVL
-# 11-Jan-2024: version 1
+# Install helper script for jupyter-electron-app
+#
+# 11-Jan-2024: Rev. 1      -  John L   -  Initial build
+# 12-Jan-2024: Rev. 1.1    -  John L   -  Tab fixes
+# 13-Jan-2024: Rev. 2      -  John L   -  Rewrite for clarity and:
+#                                            - Create main function
+#                                            - Update function calls
+#                                            - Add default install value
+#
+#
+
 
 clear
 
-# Welcome info
-echo "
-####################################################
-##      Please choose from the options below.     ##
-##      Depending on chosen location,             ##
-##      the process may require                   ##
-##      elevated privileges.                      ##
-####################################################
-"
+###########################  Welcome info   ###################################
+WELCOME_MESG () {
+   echo "
+   ####################################################
+   ##            LINUX install helper for            ##
+   ##         ***  jupyter-electron-app  ***         ##
+   ##                                                ##
+   ##      Please choose from the options below.     ##
+   ##         Depending on chosen location,          ##
+   ##          the process may require               ##
+   ##            elevated privileges.                ##
+   ####################################################
+   "
+   echo "Available options are:"
+   echo "> 1. INSTALL npm-based electron, then package for linux execution"
+   echo "> 2. REMOVE / CLEAN npm-installed packages & build area"
+   echo "> 3. QUIT / CANCEL / EXIT"
+}
 
-# Create timer function to allow reading and time to cancel
-timer_func () {
+####### Create TIMER function to allow reading and time to cancel #############
+TIMER () {
    secs=$((5 * 1))
    while [ $secs -gt 0 ]; do
       echo -ne ">>> $secs \033 \r"
@@ -24,76 +42,101 @@ timer_func () {
       : $((secs--))
    done
 }
-# Install the req'd files and run packager
-npm_install_func() {
+
+#########  Set DEFAULT INSTALL value in User's home dir  ######################
+HOMEDIR=$( getent passwd "$USER" |cut -d: -f6 )
+INST_DIR=$HOMEDIR/.local/share/jupyter-electron-app
+
+############# Install the req'd npm files and run packager  ###################
+NPM_BUILD () {
+   echo "building electron packages"
    npm install electron electron-packager
    npm run package-linux
 }
 
-# Clean up any residual files in /tmp/
-cleanup_func () {
-   echo "cleaning up any /tmp/ files"
-   timer_func
-   rm -rfv /tmp/electron-packager
-   rm -fv /tmp/jupyter-electron-app-*.rpm
+#################   Give User INSTALL DIR choice  #############################
+INST_CHOICE () {
+   echo "Default installation: $INST_DIR"
+   read -p "Install to alternative location (y/n)? > " yn
+   case $yn in
+   [Yy]) read -p "Full path to alternative location: > " INST_DIR
+         INST_ROOT ;;
+   [Nn]) INST_LOCAL ;;
+   *   ) echo "Please enter y/Y or n/N." ;;
+   esac
 }
 
-while true
-do
-   echo "Available options:"
-   echo "> 1. INSTALL npm-based electron, then package for linux execution"
-   echo "> 2. CLEAN old npm-installed packages / remove build area"
-   echo "> 3. CANCEL"
-   read -p "> " USER_IN
+#######################  Package Installer  ###################################
+INST_LOCAL () {
+   echo "Moving files to $INST_DIR"
+   TIMER
+   mv ./release-builds/jupyter-electron-app-linux-x64 $INST_DIR
+   ##chmod -R 755 $INST_DIR
+}
+INST_ROOT () {
+   echo "Moving files to $INST_DIR"
+   TIMER
+   mv ./release-builds/jupyter-electron-app-linux-x64 /tmp/
+   sudo mv /tmp/jupyter-electron-app-linux-x64 $INST_DIR
+   sudo chown -R root:root $INST_DIR
+   sudo chmod -R 755 $INST_DIR
+}
 
-   # Start the chosen option
-   case "$USER_IN" in
-   1) read -p "Please give the installation directory: > " INSTALL_DIR
-      read -p "Does this location require sudo privileges (y/n)? > " yn
-      case $yn in
-         [Yy]) echo "OK, will request password later."
-               timer_func
-               npm_install_func
-               cp -r ./release-builds/jupyter-electron-app-linux-x64 /tmp/
-               echo "Moving to $INSTALL_DIR"
-               timer_func
-               # sudo mkdir $INSTALL_DIR
-               sudo mv /tmp/jupyter-electron-app-linux-x64 $INSTALL_DIR
-               sudo chown -R root:root $INSTALL_DIR
-               sudo chmod -R 755 $INSTALL_DIR
-               echo "$(date +%F---%H:%M:%S) : installed to $INSTALL_DIR" >> install_log;;
-         [Nn]) echo "Installing as local user."
-               timer_func
-               npm_install_func
-               echo "Moving to $INSTALL_DIR"
-               timer_func
-               # mkdir $INSTALL_DIR
-               mv ./release-builds/jupyter-electron-app-linux-x64 $INSTALL_DIR
-               chmod -R 755 $INSTALL_DIR
-               echo "$(date +%F---%H:%M:%S) : installed to $INSTALL_DIR" >> install_log;;
-         *   ) echo "Invalid response.
-                     Need y or n, please." ;;
-      esac
+################## Clean up any residual files in /tmp/ #######################
+CLEANUP () {
+   TIMER
+   echo "cleaning up any /tmp/ files"
+   rm -rfv /tmp/electron-packager
+   # rm -fv /tmp/jupyter-electron-app-*.rpm
+}
+
+###############################################################################
+###############################################################################
+###############################################################################
+MAIN () {
+   WELCOME_MESG
+   read -p "> " USER_OPTION
+
+   ## Start the chosen option
+   case "$USER_OPTION" in
+   1) echo "Building packages..."
+      TIMER
+      NPM_BUILD
+      INST_CHOICE
+      echo "$(date +%F--%H:%M:%S) > Installed to $INST_DIR" >> activity_log.txt
       echo "Cleaning up..."
-      cleanup_func
+      CLEANUP
       clear
-      # list out the current npm-installed packages before exiting
+      ## list current npm-installed packages before exiting
       npm list
-      break ;;
+      exit ;;
 
-   2) echo "Cleaning up npm packages now"
+   2)
+      echo "Cleaning up npm packages in..."
+      CLEANUP
       npm remove electron electron-packager
       rm -rfv ./release-builds
       echo "./release-builds cleaned."
-      cleanup_func
-      clear
+      echo "$(date +%F--%H:%M:%S) > Activated Cleanup." >> activity_log.txt
+      # clear
+      ## list empty npm-installed packages before exiting, for verification
       npm list
-      break ;;
-
-   3) echo "Package compile cancelled."
-      clear
       exit ;;
-   *) echo "Unknown.  Please choose one of the options."
-      sleep 1 ;;
+
+   3)
+      echo "Quiting."
+      exit ;;
+
+   *)
+      echo "Unknown option.  Please choose properly."
+      sleep 1
+      clear ;;
    esac
+
+}
+
+###########################   run it   ########################################
+while true
+do
+   MAIN
 done
