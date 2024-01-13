@@ -61,7 +61,9 @@ INST_CHOICE () {
    case $yn in
    [Yy]) read -p "Full path to alternative location: > " INST_DIR
          INST_ROOT ;;
+   
    [Nn]) INST_LOCAL ;;
+   
    *   ) echo "Please enter y/Y or n/N." ;;
    esac
 }
@@ -110,9 +112,8 @@ MAIN () {
       ## list current npm-installed packages before exiting
       npm list
       exit ;;
-
-   2)
-      echo "Cleaning up npm packages in..."
+   
+   2) echo "Cleaning up npm packages in..."
       CLEANUP
       npm remove electron electron-packager
       rm -rfv ./release-builds
@@ -123,12 +124,10 @@ MAIN () {
       npm list
       exit ;;
 
-   3)
-      echo "Quiting."
+   3) echo "Quiting."
       exit ;;
 
-   *)
-      echo "Unknown option.  Please choose properly."
+   *) echo "Unknown option.  Please choose properly."
       sleep 1
       clear ;;
    esac
