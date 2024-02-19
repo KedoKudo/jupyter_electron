@@ -68,10 +68,10 @@ npm_func () {
 #################   Give User INSTALL DIR choice  #############################
 install_chooser_func () {
    echo -e "\n\n\nDefault deployment location is $INST_DIR"
-   while IFS= read -p "Install to alternative location, (y/n/q) > " \
+   while IFS= read -p "Use the current location? (y/n/q) > " \
    && [[ $REPLY != [Qq] ]]; do
       case $REPLY in
-      [Yy]) while IFS= read -p \
+      [Nn]) while IFS= read -p \
       "Will alternative location require elevated privileges, (y/n) > "; do
                case $REPLY in
                [Yy]) echo "Deploying as root."
@@ -86,7 +86,8 @@ install_chooser_func () {
                esac
             done
          exit ;;
-      [Nn]) echo "install_func_local"
+      [Yy]) echo "install_func_local"
+            install_func_local
          exit ;;
       *   ) echo -e "Please enter y/Y, n/N, or q/Q to QUIT." ;;
       esac
