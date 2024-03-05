@@ -12,7 +12,7 @@
 #                                            - Rename functions
 #                                            - moved default VARs to top
 #                                            - Update menu items
-#
+# 05-Mar-2024: Remove timer script
 #
 # TODO: Add line item to update thru git
 #
@@ -48,15 +48,15 @@ menu_func () {
    echo "> Q or q. QUIT / CANCEL / EXIT"
 }
 
-####### Create timer_func function to allow reading and time to cancel ########
-timer_func () {
-   secs=$((5 * 1))
-   while [ $secs -gt 0 ]; do
-      echo -ne ">>> $secs \033 \r"
-      sleep 1
-      : $((secs--))
-   done
-}
+# ####### Create timer_func function to allow reading and time to cancel ########
+# timer_func () {
+#    secs=$((5 * 1))
+#    while [ $secs -gt 0 ]; do
+#       echo -ne ">>> $secs \033 \r"
+#       sleep 1
+#       : $((secs--))
+#    done
+# }
 
 ############# Install the req'd npm files and run packager  ###################
 npm_func () {
@@ -97,13 +97,13 @@ install_chooser_func () {
 #######################  Package Installer  ###################################
 install_func_local () {
    echo "Moving files to $INST_DIR"
-   timer_func
+   # timer_func
    mv ./release-builds/jupyter-electron-app-linux-x64 $INST_DIR
    ##chmod -R 755 $INST_DIR
 }
 install_func_root () {
    echo "Moving files to $INST_DIR"
-   timer_func
+   # timer_func
    mv ./release-builds/jupyter-electron-app-linux-x64 /tmp/
    sudo mv /tmp/jupyter-electron-app-linux-x64 $INST_DIR
    sudo chown -R root:root $INST_DIR
@@ -112,7 +112,7 @@ install_func_root () {
 
 ################## Clean up any residual files in /tmp/ #######################
 cleanup_func () {
-   timer_func
+   # timer_func
    echo "cleaning up any /tmp/ files"
    rm -rfv /tmp/electron-packager
    # rm -fv /tmp/jupyter-electron-app-*.rpm
@@ -128,7 +128,7 @@ main () {
    ## Start the chosen option
    case "$USER_OPTION" in
    1  )  echo "Building packages..."
-         timer_func
+         # timer_func
          npm_func
          install_chooser_func
          echo "$(date +%F--%H:%M:%S) > Installed to $INST_DIR" >> activity_log.txt
